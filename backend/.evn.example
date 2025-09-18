@@ -1,0 +1,4 @@
+DATABASE_URL=postgresql+asyncpg://app:password@db:5432/messenger
+SECRET_KEY=change_me_super_secret
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+UPLOAD_DIR=./uploads
