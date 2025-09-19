@@ -1,45 +1,28 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional, List
 from datetime import datetime
-
 
 class UserCreate(BaseModel):
     username: str
     email: str
     password: str
-    display_name: Optional[str]
-
+    display_name: str | None = None
 
 class UserOut(BaseModel):
     id: int
     username: str
-    display_name: Optional[str]
-
-
+    email: str
+    display_name: str | None = None
     class Config:
-        orm_mode = True
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-
+        from_attributes = True
 
 class AttachmentOut(BaseModel):
     id: int
     filename: str
     url: str
     content_type: Optional[str]
-
     class Config:
-        orm_mode = True
-
-
-class MessageCreate(BaseModel):
-    receiver_id: int
-    content: Optional[str]
-    attachment_ids: Optional[List[int]] = []
-
+        from_attributes = True
 
 class MessageOut(BaseModel):
     id: int
@@ -50,6 +33,9 @@ class MessageOut(BaseModel):
     updated_at: datetime
     edited: bool
     attachments: List[AttachmentOut] = []
-
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

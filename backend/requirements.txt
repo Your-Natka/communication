@@ -1,9 +1,11 @@
 fastapi
 uvicorn[standard]
-SQLAlchemy
-asyncpg
-aiosqlite
+sqlalchemy>=1.4
+asyncpg             # for Postgres
+alembic
+pydantic
 python-jose[cryptography]
 passlib[bcrypt]
-python-multipart
-pydantic
+python-multipart     # for file uploads
+aiofiles             # for saving files
+python-dotenv

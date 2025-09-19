@@ -1,32 +1,28 @@
-from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
-from app.db import init_db
-from app.routers import auth as auth_router, messages as messages_router, files as files_router
+from fastapi import FastAPI, WebSocket, Depends
+from .routers import auth, messages, files
+from .websocket_manager import manager
+from .auth_utils import get_current_user
 
-
-app = FastAPI(title="Connection - Messenger Backend")
-
-
-# CORS for dev (adjust origins in prod)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
-
-
-app.include_router(auth_router.router, prefix="/auth", tags=["auth"])
-app.include_router(messages_router.router, prefix="/messages", tags=["messages"])
-app.include_router(files_router.router, prefix="/files", tags=["files"])
-
+app = FastAPI()
+app.include_router(auth.router)
+app.include_router(messages.router)
+app.include_router(files.router)
 
 @app.get("/")
 def root():
-    return {"message": "Connection backend is running"}
+    return {"message": "Backend is running 🚀"}
+
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: int):
+    # В production перевірка токена в query params або header потрібна
+    await manager.connect(user_id, websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
+            # обробка: наприклад, прямі повідомлення (forward) або typing events
+            # data = {'type': 'message', 'to': receiver_id, 'content': '...'}
+            if data.get("type") == "message":
+                to = data["to"]
+                await manager.send_personal_message(to, data)
+    except Exception:
+        manager.disconnect(user_id)

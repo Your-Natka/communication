@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import Welcome from "./components/Welcome";
 import RegisterForm from "./components/RegisterForm";
 import LoginForm from "./components/LoginForm";
 import Chat from "./components/Chat";
 
 export default function App() {
+  const [showWelcome, setShowWelcome] = useState(true);
   const [token, setToken] = useState(localStorage.getItem("token"));
+
+  const handleEnterChat = () => setShowWelcome(false);
 
   const handleLogin = (newToken: string) => {
     localStorage.setItem("token", newToken);
@@ -18,7 +22,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      {!token ? (
+      {showWelcome ? (
+        <Welcome onEnterChat={handleEnterChat} />
+      ) :!token ? (
         <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl">
           <div className="flex-1 bg-white p-6 rounded shadow">
             <h2 className="text-xl font-bold mb-4 text-center">Register</h2>
