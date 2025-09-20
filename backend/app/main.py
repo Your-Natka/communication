@@ -1,12 +1,14 @@
 from fastapi import FastAPI, WebSocket, Depends
 from .routers import auth, messages, files
 from .websocket_manager import manager
-from .auth_utils import get_current_user
+from app.auth_utils import get_current_user
+from app.routers import users
 
 app = FastAPI()
 app.include_router(auth.router)
 app.include_router(messages.router)
 app.include_router(files.router)
+app.include_router(users.router)
 
 @app.get("/")
 def root():

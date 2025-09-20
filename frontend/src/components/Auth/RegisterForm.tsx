@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { registerUser } from "../api/api";
+import { registerUser } from "../../api/api";
 
 interface RegisterFormProps {
   onRegister?: (token: string) => void;
@@ -13,9 +13,23 @@ export default function RegisterForm({ onRegister }: RegisterFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = "mock-token"; // замість цього виклик API
-    if (onRegister) onRegister(token);
-  };
+    setMessage(""); // очищаємо повідомлення
+
+    try {
+        const response = await registerUser({ username, email, password });
+
+        // якщо бекенд повертає токен
+        if (response.token) {
+            if (onRegister) onRegister(response.token);
+            setMessage("Реєстрація успішна!");
+        } else {
+            setMessage("Помилка реєстрації");
+        }
+    } catch (error: any) {
+        console.error(error);
+        setMessage(error.message || "Помилка під час реєстрації");
+    }
+};
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">

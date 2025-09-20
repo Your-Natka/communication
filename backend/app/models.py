@@ -40,3 +40,4 @@ class Attachment(Base):
     url = Column(String, nullable=False)
     content_type = Column(String, nullable=True)
     message = relationship("Message", back_populates="attachments")
+    
